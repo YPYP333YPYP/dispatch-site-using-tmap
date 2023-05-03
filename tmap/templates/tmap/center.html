@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>INSERT</title>
+</head>
+<body>
+    {% load crispy_forms_tags %}
+    <div align="center">
+        <h2>CenterList</h2>
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <table>
+
+            {{ form | crispy }}
+
+        </table>
+        <button type="submit" class="btn btn-success float-right">Submit</button>
+    </form>
+    </div>
+
+</body>
+</html>
