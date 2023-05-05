@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>INSERT</title>
-</head>
-<body>
+{% extends 'tmap/base.html' %}
+{% block main_area %}
     {% load crispy_forms_tags %}
     <div align="center">
         <h2>CenterList</h2>
@@ -18,5 +13,4 @@
     </form>
     </div>
 
-</body>
-</html>
+{% endblock %}

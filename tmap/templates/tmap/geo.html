@@ -1,9 +1,11 @@
-<form method="post" enctype="multipart/form-data">{% csrf_token %}
-        <table>
-            <tr>
-                <th><label >주소</label></th>
-                <td><input type="text" name="name" id="name"></td>
-            </tr>
-        </table>
-        <button type="submit" class="btn btn-success float-right">Submit</button>
-</form>
+{% extends 'tmap/base.html' %}
+
+{% block main_area %}
+<div>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+{% endblock %}

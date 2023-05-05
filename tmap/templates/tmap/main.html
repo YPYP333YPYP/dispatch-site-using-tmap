@@ -1,0 +1,10 @@
+{% extends 'tmap/base.html' %}
+{% block main_area %}
+<button onclick = "openSmallWindow()">주소 입력하기</button>
+<script>
+  function openSmallWindow() {
+    window.open('tmap/geo.html', 'smallWindow', 'width=400,height=400');
+  }
+</script>
+
+{% endblock %}

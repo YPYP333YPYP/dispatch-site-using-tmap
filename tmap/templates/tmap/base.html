@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Tmap - 배차 사이트</title>
+
+    <link href="{% static 'blog/bootstrap/sb-admin-2.css' %}" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/726bbd6862.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="d-flex flex-column min-vh-100" id="page-top">
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Begin of sidebar -->
+    {% include 'tmap/sidebar.html' %}
+    <!-- End of Sidebar-->
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+                <div class="container my-3">
+                    <div class="row">
+                        <div class="col-md-8 col-lg-9" id="main-area">
+                            {% block main_area %}
+                            {% endblock %}
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            <!-- Begin of Topbar -->
+            {% include 'tmap/topbar.html' %}
+            <!-- End of Topbar -->
+
+
+
+
+            <footer class="py-2 bg-dark mt-auto">
+                <div class="container">
+                    <p class="m-0 text-center text-white">
+                        Copyright &copy; Green Thing
+                    </p>
+                </div>
+                <!-- /.container -->
+            </footer>
+
+            <!-- Bootstrap core JavaScript -->
+            <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+                    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+                    crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+                    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+                    crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+                    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+                    crossorigin="anonymous"></script>
+
+
+</body>
+</html>
