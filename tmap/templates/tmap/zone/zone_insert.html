@@ -1,0 +1,16 @@
+{% extends 'tmap/base.html' %}
+{% block main_area %}
+    {% load crispy_forms_tags %}
+    <div align="center">
+        <h2>ZonList</h2>
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <table>
+
+            {{ form | crispy }}
+
+        </table>
+        <button type="submit" class="btn btn-success float-right">Submit</button>
+    </form>
+    </div>
+
+{% endblock %}

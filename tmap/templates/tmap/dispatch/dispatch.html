@@ -1,0 +1,78 @@
+{% extends 'tmap/base_full_width.html' %}
+
+{% block head_title %}Create Order - Tmap{% endblock %}
+
+{% block main_area %}
+<style>
+#option label {
+  display: inline-block;
+  width: 100px;
+  font-weight: bold;
+}
+#option input[type="text"] {
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+
+</style>
+<h1>Create New Dispatch</h1>
+<hr/>
+{% load crispy_forms_tags %}
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <table>
+
+        {{ form.orderList|as_crispy_field }}
+        {{ form.vehicleList|as_crispy_field }}
+        {{ form.startTime|as_crispy_field }}
+
+
+        <br>
+        <hr>
+        <br>
+        <button type="button" onclick="showForm()">추가 옵션</button>
+        <br><br>
+        <div id="option" style="display:none;">
+
+            <label>배차 옵션 </label>
+
+            <select id="option_type" name="option_type">
+                <option value="1">무게균등</option>
+                <option value="2">부피균등</option>
+                <option value="3">배송지 건수 균등</option>
+
+            </select>
+            <br>
+
+            <label>거리 / 시간 옵션 </label>
+            <select id="equalization_type" name="equalization_type">
+                <option value="1">옵션설정안함</option>
+                <option value="2">거리 균등</option>
+                <option value="3">시간 균등</option>
+
+            </select>
+
+            <br>
+
+
+            <p># 참고</p>
+            <p>배차 옵션 : 1. 무게균등 / 2. 부피균등 / 3. 배송지 건수 균등</p>
+            <p>거리 / 시간 옵션 : 1. 옵션설정안함 / 2. 거리 균등 / 3. 시간 균등</p>
+
+        </div>
+
+    </table>
+
+    <button type="submit" class="btn btn-success float-right">Submit</button>
+</form>
+
+<script>
+function showForm() {
+  var form = document.getElementById("option");
+  form.style.display = "block";
+}
+
+</script>
+
+{% endblock %}

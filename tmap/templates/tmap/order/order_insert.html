@@ -1,0 +1,71 @@
+{% extends 'tmap/base_full_width.html' %}
+
+{% block head_title %}Create Order - Tmap{% endblock %}
+
+{% block main_area %}
+<style>
+#option label {
+  display: inline-block;
+  width: 100px;
+  font-weight: bold;
+}
+#option input[type="text"] {
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+</style>
+<h1>Create New Order</h1>
+<hr/>
+{% load crispy_forms_tags %}
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <table>
+
+        {{ form.orderId|as_crispy_field }}
+        {{ form.orderName|as_crispy_field }}
+        {{ form.geo|as_crispy_field }}
+        {{ form.deliveryWeight|as_crispy_field }}
+
+        <br>
+        <hr>
+        <br>
+        <button type="button" onclick="showForm()">추가 옵션</button>
+        <br><br>
+        <div id="option" style="display:none;">
+
+           <label>차량 유형 </label>
+            <input type="text" name="vehicle_type" id="vehicle_type">
+            <br>
+
+            <label>권역 코드 </label>
+            <input type="text" name="zone_code" id="zone_code">
+            <br>
+
+
+            <label>예상 시간 </label>
+            <input type="text" name="service_time" id="service_time">
+            <br>
+
+
+            <label>배송 부피 </label>
+            <input type="text" name="delivery_volume" id="delivery_volume">
+            <p># 참고</p>
+            <p>차량 유형 : 상온 - 냉장/냉동 - 기타 중 택1</p>
+            <p>예상 시간 : 단위(분)</p>
+
+        </div>
+
+    </table>
+
+    <button type="submit" class="btn btn-success float-right">Submit</button>
+</form>
+
+<script>
+function showForm() {
+  var form = document.getElementById("option");
+  form.style.display = "block";
+}
+</script>
+
+{% endblock %}
