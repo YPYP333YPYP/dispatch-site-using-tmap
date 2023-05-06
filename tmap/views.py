@@ -5,6 +5,7 @@ import requests
 from django.http import HttpResponse, JsonResponse
 
 
+
 class GeoInformationView(CreateView):
     model = GeoInformation
     fields = ['name']
@@ -38,6 +39,7 @@ class GeoInformationView(CreateView):
         geo = GeoInformation(name=name, latitude=latitude or None, longitude=longitude or None)
 
         geo.save()
+
         return redirect('/tmap/geo')
 
 
@@ -49,13 +51,12 @@ class CenterListCreate(CreateView):
     def form_valid(self, form):
         center = form.save(commit=False)
         geo = center.geo
-        center.save()
 
         latitude = geo.latitude
         longitude = geo.longitude
         centerid = center.centerId
-        centername = center.centerName
-        address = geo.name
+        centername = center.centerName.encode('utf-8')
+        address = geo.name.encode('utf-8')
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
         url = f'https://apis.openapi.sk.com/tms/centerInsert?appKey={appkey}&centerId={centerid}&centerName={centername}&address={address}&latitude={latitude}&longitude={longitude}'
@@ -66,8 +67,13 @@ class CenterListCreate(CreateView):
         }
 
         response = requests.get(url, headers=headers)
+        response = response.json()
 
+        flag = response["resultCode"]
+        center.flag = flag
+        center.save()
         return redirect('/tmap/center/insert/')
+
 
 
 class CenterListView(ListView):
@@ -132,7 +138,6 @@ class VehicleListCreate(CreateView):
         form.instance.skillPer = skill_per
         form.instance.volume = volume
 
-        form.save()
         vehicle = form.save(commit=False)
 
         vehicleid = vehicle.vehicleId
@@ -148,6 +153,10 @@ class VehicleListCreate(CreateView):
         }
 
         response = requests.get(url, headers=headers)
+        response = response.json()
+        flag = response["resultCode"]
+        vehicle.flag = flag
+        vehicle.save()
 
         return redirect('/tmap/vehicle/insert')
 
@@ -178,7 +187,7 @@ class OrderListCreate(CreateView):
         form.instance.serviceTime = service_time
         form.instance.volume = delivery_volume
 
-        form.save()
+
         order = form.save(commit=False)
 
         orderid = order.orderId
@@ -198,6 +207,10 @@ class OrderListCreate(CreateView):
         }
 
         response = requests.get(url, headers=headers)
+        response = response.json()
+        flag = response["resultCode"]
+        order.flag = flag
+        order.save()
 
         return redirect('/tmap/order/insert')
 
@@ -219,7 +232,7 @@ class DispatchListCreate(CreateView):
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        url = f"https://apis.openapi.sk.com/tms/allocation?appKey={appkey}&allocationType=2&orderIdList={orderlist}&vehicleIdList={vehiclelist}&startTime={starttime}&optionType={option_type}&equalizationType={equalization_type}"
+        url = f"https://apis.openapi.sk.com/tms/allocation?appKey={appkey}&allocationType=1&orderIdList={orderlist}&vehicleIdList={vehiclelist}&startTime={starttime}&optionType={option_type}&equalizationType={equalization_type}"
 
         headers = {
             "accept": "application/json",
@@ -229,8 +242,10 @@ class DispatchListCreate(CreateView):
         response = requests.get(url, headers=headers)
         response = response.json()
         mappingkey = response["mappingKey"]
+
+        flag = response["resultCode"]
         dispatchList = DispatchList(orderList=orderlist, vehicleList=vehiclelist, startTime=starttime,
-                                    optionType=option_type, equalizationType=equalization_type, mappingKey=mappingkey)
+                                    optionType=option_type, equalizationType=equalization_type, mappingKey=mappingkey, flag=flag)
         dispatchList.save()
 
         return redirect('/tmap/dispatch/')

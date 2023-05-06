@@ -15,6 +15,7 @@ class CenterList(models.Model):
     centerId = models.CharField(max_length=100)
     centerName = models.CharField(max_length=100)
     geo = models.ForeignKey(GeoInformation, null=True, blank=True, on_delete=models.SET_NULL)
+    flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return f'{self.centerName}'
@@ -23,6 +24,7 @@ class CenterList(models.Model):
 class ZoneList(models.Model):
     code = models.CharField(max_length=100 )
     name = models.CharField(max_length=100, null=True)
+    flag = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name}'
@@ -36,6 +38,7 @@ class VehicleList(models.Model):
     zoneCode = models.CharField(max_length=100, null=True)
     skillPer = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], null=True)
     volume = models.IntegerField(null=True)
+    flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return f'{self.vehicleName}'
@@ -51,6 +54,7 @@ class OrderList(models.Model):
     deliveryWeight = models.CharField(max_length=100, null=True)
     deliveryVolume = models.CharField(max_length=100, null=True)
     updateDate = models.DateTimeField(null=True)
+    flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return f'{self.orderName}'
@@ -63,12 +67,14 @@ class DispatchList(models.Model):
     optionType = models.CharField(max_length=10, null=True)
     equalizationType = models.CharField(max_length=10, null=True)
     mappingKey = models.CharField(max_length=100, null=True)
+    flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
-        return f'{self.mappingKey}'
+        return f'{self.orderList}'
 
 
 class DispatchListResult(models.Model):
     orderList = models.ForeignKey(OrderList, blank=False, on_delete=models.CASCADE)
     vehicleList = models.ForeignKey(VehicleList, blank=False, on_delete=models.CASCADE)
     routeList = models.CharField(max_length=1000)
+    flag = models.BooleanField(default=False)
