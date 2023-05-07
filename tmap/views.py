@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
 from .models import GeoInformation, CenterList, ZoneList, VehicleList, OrderList, DispatchList
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
 import requests
 from django.http import HttpResponse, JsonResponse
-
+from django.contrib import messages
+from django.urls import reverse_lazy
 
 
 class GeoInformationView(CreateView):
     model = GeoInformation
     fields = ['name']
     template_name = 'tmap/geo.html'
+    success_url = reverse_lazy('tmap:geo')
 
     def form_valid(self, form):
         name = form.cleaned_data['name']
@@ -40,13 +42,16 @@ class GeoInformationView(CreateView):
 
         geo.save()
 
-        return redirect('/tmap/geo')
+        alert_script = f"alert('센터 입력 완료!');location.href='{self.success_url}';"
+
+        return HttpResponse(f"<script>{alert_script}</script>")
 
 
 class CenterListCreate(CreateView):
     model = CenterList
     fields = ['centerId', 'centerName', 'geo']
     template_name = 'tmap/center/center_insert.html'
+    success_url = reverse_lazy('tmap:center_insert')
 
     def form_valid(self, form):
         center = form.save(commit=False)
@@ -71,19 +76,32 @@ class CenterListCreate(CreateView):
 
         flag = response["resultCode"]
         center.flag = flag
-        center.save()
-        return redirect('/tmap/center/insert/')
 
+        center.save()
+        alert_script = f"alert('센터 입력 완료!');location.href='{self.success_url}';"
+        return HttpResponse(f"<script>{alert_script}</script>")
 
 
 class CenterListView(ListView):
     model = CenterList
-
     template_name = 'tmap/center/center_get.html'
 
     def get_context_data(self, **kwargs):
-        context = super(CenterListView, self).get_context_data()
+        context = super().get_context_data(**kwargs)
+        context['centerList_list'] = CenterList.objects.all().order_by('flag')
         return context
+
+
+class CenterListUpdate(UpdateView):
+    model = CenterList
+    fields = ""
+    template_name = 'tmap/center/center_update.html'
+
+    def get_context_data(self, **kwargs):
+        pass
+
+    def form_valid(self, form):
+        pass
 
 
 class ZoneListCreate(CreateView):
@@ -93,7 +111,6 @@ class ZoneListCreate(CreateView):
 
     def form_valid(self, form):
         zone = form.save(commit=False)
-        zone.save()
 
         name = zone.name
         code = zone.code
@@ -106,6 +123,12 @@ class ZoneListCreate(CreateView):
         }
 
         response = requests.get(url, headers=headers)
+        response = response.json()
+
+        flag = response["resultCode"]
+        zone.flag = flag
+
+        zone.save()
 
         return redirect('/tmap/zone/insert')
 

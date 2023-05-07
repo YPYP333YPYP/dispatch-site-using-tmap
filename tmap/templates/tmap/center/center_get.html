@@ -1,15 +1,31 @@
 {% extends 'tmap/base.html' %}
 {% block main_area %}
-{% for c in centerlist_list %}
+{% for c in centerList_list %}
 
 <div class="card mb-4">
-    <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-    <div class="card-body">
-        <p class="card-title">{{ c.centerId }}</p>
-        <p class="card-text">{{ c.centerName }}</p>
-        <p class="card-text">{{ c.geo }}</p>
-
+    {% if c.flag == "200" %}
+    <div class="container">
+        <h2>현재 선택된 센터</h2>
+        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+        <div class="card-body">
+            <p class="card-title">{{ c.centerId }}</p>
+            <p class="card-text">{{ c.centerName }}</p>
+            <p class="card-text">{{ c.geo }}</p>
+        </div>
     </div>
+    {% endif %}
+    {% if c.flag == "4003" %}
+    <div class="container">
+        <h2>입력된 센터</h2>
+        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+        <div class="card-body">
+            <p class="card-title">{{ c.centerId }}</p>
+            <p class="card-text">{{ c.centerName }}</p>
+            <p class="card-text">{{ c.geo }}</p>
+        </div>
+    </div>
+    {% endif %}
 </div>
+
 {% endfor %}
 {% endblock %}

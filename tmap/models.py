@@ -20,11 +20,14 @@ class CenterList(models.Model):
     def __str__(self):
         return f'{self.centerName}'
 
+    def get_absolute_url(self):
+        return f'/tmap/center/{self.pk}'
+
 
 class ZoneList(models.Model):
     code = models.CharField(max_length=100 )
     name = models.CharField(max_length=100, null=True)
-    flag = models.BooleanField(default=False)
+    flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return f'{self.name}'
@@ -77,4 +80,4 @@ class DispatchListResult(models.Model):
     orderList = models.ForeignKey(OrderList, blank=False, on_delete=models.CASCADE)
     vehicleList = models.ForeignKey(VehicleList, blank=False, on_delete=models.CASCADE)
     routeList = models.CharField(max_length=1000)
-    flag = models.BooleanField(default=False)
+    flag = models.CharField(max_length=10, null=True)
