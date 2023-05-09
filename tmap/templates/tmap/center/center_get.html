@@ -1,4 +1,4 @@
-{% extends 'tmap/base.html' %}
+{% extends 'tmap/base_full_width.html' %}
 {% block main_area %}
 {% for c in centerList_list %}
 
@@ -11,6 +11,21 @@
             <p class="card-title">{{ c.centerId }}</p>
             <p class="card-text">{{ c.centerName }}</p>
             <p class="card-text">{{ c.geo }}</p>
+            <div>
+                <a role="button"
+                   class="btn btn-sm btn-info float-right"
+                   id="centerList-{{ c.pk }}-update-btn_200"
+                   href="/tmap/center/update/{{ c.pk }}/">
+                    수정
+                </a> <a role="button"
+                        href="/tmap/center/delete/{{ c.pk }}"
+                        id="comment-{{ c.pk }}-delete-modal-btn_200"
+                        class="btn btn-sm btn-danger float-right">
+
+                삭제
+            </a>
+            </div>
+
         </div>
     </div>
     {% endif %}
@@ -22,6 +37,20 @@
             <p class="card-title">{{ c.centerId }}</p>
             <p class="card-text">{{ c.centerName }}</p>
             <p class="card-text">{{ c.geo }}</p>
+            <div>
+            <a role="button"
+               class="btn btn-sm btn-info float-right"
+               id="centerList-{{ c.pk }}-update-btn_4003"
+               href="/tmap/center/update/{{ c.pk }}/">
+                수정
+            </a> <a role="button"
+                    href="/tmap/center/delete/{{ c.pk }}"
+                    id="comment-{{ c.pk }}-delete-modal-btn_4003"
+                    class="btn btn-sm btn-danger float-right">
+
+            삭제
+        </a>
+        </div>
         </div>
     </div>
     {% endif %}

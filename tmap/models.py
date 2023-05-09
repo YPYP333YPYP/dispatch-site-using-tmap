@@ -18,7 +18,7 @@ class CenterList(models.Model):
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
-        return f'{self.centerName}'
+        return f'{self.pk} + {self.centerId}'
 
     def get_absolute_url(self):
         return f'/tmap/center/{self.pk}'

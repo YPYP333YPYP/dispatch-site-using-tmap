@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'tmap/base_full_width.html' %}
+{% block main_area %}
+    {% load crispy_forms_tags %}
+    <div align="center">
+        <h2>CenterList Update</h2>
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <table>
 
-</body>
-</html>
+            {{ form | crispy }}
+
+        </table>
+        <button type="submit" class="btn btn-success float-right">Submit</button>
+    </form>
+    </div>
+
+{% endblock %}

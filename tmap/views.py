@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import GeoInformation, CenterList, ZoneList, VehicleList, OrderList, DispatchList
 from django.views.generic import CreateView, ListView, UpdateView
 import requests
@@ -94,14 +94,59 @@ class CenterListView(ListView):
 
 class CenterListUpdate(UpdateView):
     model = CenterList
-    fields = ""
+    fields = ['centerName', 'geo']
     template_name = 'tmap/center/center_update.html'
 
     def get_context_data(self, **kwargs):
-        pass
+        context = super(CenterListUpdate, self).get_context_data()
+        return context
 
     def form_valid(self, form):
-        pass
+
+        center = form.save(commit=False)
+        geo = center.geo
+
+        latitude = geo.latitude
+        longitude = geo.longitude
+        centerid = center.centerId
+        centername = center.centerName.encode('utf-8')
+        address = geo.name.encode('utf-8')
+        flag = center.flag
+        appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+        if flag == "200":
+            url = f'https://apis.openapi.sk.com/tms/centerUpdate?appKey={appkey}&centerId={centerid}&centerName={centername}&address={address}&latitude={latitude}&longitude={longitude}'
+
+            headers = {
+                "accept": "application/json",
+                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+            }
+
+            response = requests.get(url, headers=headers)
+            response = response.json()
+
+            flag = response["resultCode"]
+            center.flag = flag
+
+        center.save()
+
+        return redirect('/tmap/center/get')
+
+
+def delete_CenterList(request, pk):
+    centerList = get_object_or_404(CenterList, pk=pk)
+    centerid = centerList.centerId
+    appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+    url = f"https://apis.openapi.sk.com/tms/centerDelete?appKey={appkey}&centerId={centerid}"
+
+    headers = {
+        "accept": "application/json",
+        "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    centerList.delete()
+    return redirect('/tmap/center/get')
 
 
 class ZoneListCreate(CreateView):
