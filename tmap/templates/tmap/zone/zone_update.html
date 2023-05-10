@@ -1,0 +1,16 @@
+{% extends 'tmap/base_full_width.html' %}
+{% block main_area %}
+    {% load crispy_forms_tags %}
+    <div align="center">
+        <h2>ZoneList Update</h2>
+        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+        <table>
+
+            {{ form | crispy }}
+
+        </table>
+        <button type="submit" class="btn btn-success float-right">Submit</button>
+    </form>
+    </div>
+
+{% endblock %}

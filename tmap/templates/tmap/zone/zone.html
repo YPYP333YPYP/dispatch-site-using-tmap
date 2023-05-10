@@ -1,0 +1,34 @@
+{% extends 'tmap/base_full_width.html' %}
+{% block main_area %}
+{% for z in zoneList_list %}
+
+<div class="card mb-4">
+
+    <div class="container">
+        <h2>권역 리스트</h2>
+        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+        <div class="card-body">
+            <p class="card-title">{{ z.code }}</p>
+            <p class="card-text">{{ z.name }}</p>
+            <div>
+                <a role="button"
+                   class="btn btn-sm btn-info float-right"
+                   id="centerList-{{ z.pk }}-update-btn_200"
+                   href="/tmap/zone/update/{{ z.pk }}/">
+                    수정
+                </a> <a role="button"
+                        href="/tmap/zone/delete/{{ z.pk }}"
+                        id="comment-{{ z.pk }}-delete-modal-btn_200"
+                        class="btn btn-sm btn-danger float-right">
+
+                삭제
+            </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endfor %}
+{% endblock %}

@@ -84,7 +84,7 @@ class CenterListCreate(CreateView):
 
 class CenterListView(ListView):
     model = CenterList
-    template_name = 'tmap/center/center_get.html'
+    template_name = 'tmap/center/center.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -129,7 +129,7 @@ class CenterListUpdate(UpdateView):
 
         center.save()
 
-        return redirect('/tmap/center/get')
+        return redirect('/tmap/center/')
 
 
 def delete_CenterList(request, pk):
@@ -146,13 +146,14 @@ def delete_CenterList(request, pk):
     response = requests.get(url, headers=headers)
 
     centerList.delete()
-    return redirect('/tmap/center/get')
+    return redirect('/tmap/center/')
 
 
 class ZoneListCreate(CreateView):
     model = ZoneList
     fields = ['code', 'name']
     template_name = 'tmap/zone/zone_insert.html'
+    success_url = reverse_lazy('tmap:zone_insert')
 
     def form_valid(self, form):
         zone = form.save(commit=False)
@@ -175,7 +176,72 @@ class ZoneListCreate(CreateView):
 
         zone.save()
 
-        return redirect('/tmap/zone/insert')
+        alert_script = f"alert('권역 입력 완료!');location.href='{self.success_url}';"
+        return HttpResponse(f"<script>{alert_script}</script>")
+
+
+class ZoneListView(ListView):
+    model = ZoneList
+    template_name = 'tmap/zone/zone.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['zoneList_list'] = ZoneList.objects.all()
+        return context
+
+
+class ZoneListUpdate(UpdateView):
+    model = ZoneList
+    fields = ['name']
+    template_name = 'tmap/zone/zone_update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ZoneListUpdate, self).get_context_data()
+        return context
+
+    def form_valid(self, form):
+
+        zone = form.save(commit=False)
+        name = zone.name
+        code = zone.code
+
+        flag = zone.flag
+        appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+
+        if flag == "200":
+            url = f"https://apis.openapi.sk.com/tms/zoneUpdate?appKey={appkey}&code={code}&name={name}"
+
+            headers = {
+                "accept": "application/json",
+                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+            }
+
+            response = requests.get(url, headers=headers)
+            response = response.json()
+
+            flag = response["resultCode"]
+            zone.flag = flag
+
+        zone.save()
+
+        return redirect('/tmap/zone/')
+
+
+def delete_ZoneList(request, pk):
+    zoneList = get_object_or_404(ZoneList, pk=pk)
+    code = zoneList.code
+    appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+    url = f"https://apis.openapi.sk.com/tms/zoneDelete?appKey={appkey}&code={code}"
+
+    headers = {
+        "accept": "application/json",
+        "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    zoneList.delete()
+    return redirect('/tmap/zone/')
 
 
 class VehicleListCreate(CreateView):
