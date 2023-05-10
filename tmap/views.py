@@ -46,6 +46,8 @@ class GeoInformationView(CreateView):
 
         return HttpResponse(f"<script>{alert_script}</script>")
 
+# CenterList
+
 
 class CenterListCreate(CreateView):
     model = CenterList
@@ -248,6 +250,12 @@ class VehicleListCreate(CreateView):
     model = VehicleList
     fields = ['vehicleId', 'vehicleName', 'weight']
     template_name = 'tmap/vehicle/vehicle_insert.html'
+    success_url = reverse_lazy('tmap:vehicle_insert')
+
+    def get_context_data(self, **kwargs):
+        context = super(VehicleListCreate, self).get_context_data()
+        context['zoneCode'] = ZoneList.objects.all()
+        return context
 
     def form_valid(self, form):
 
@@ -268,15 +276,15 @@ class VehicleListCreate(CreateView):
             vehicle_type = "99"
 
         form.instance.vehicleType = vehicle_type
+
         form.instance.zoneCode = zone_code
         form.instance.skillPer = skill_per
-        form.instance.volume = volume
+        form.instance.volume = int(volume)
 
         vehicle = form.save(commit=False)
-
         vehicleid = vehicle.vehicleId
         vehiclename = vehicle.vehicleName
-        weight = vehicle.weight
+        weight = int(vehicle.weight)
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
         url = f"https://apis.openapi.sk.com/tms/vehicleInsert?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicle_type}&zoneCode={zone_code}&skillPer={skill_per}&volume={volume}"
@@ -292,7 +300,90 @@ class VehicleListCreate(CreateView):
         vehicle.flag = flag
         vehicle.save()
 
-        return redirect('/tmap/vehicle/insert')
+        alert_script = f"alert('차량 입력 완료!');location.href='{self.success_url}';"
+        return HttpResponse(f"<script>{alert_script}</script>")
+
+
+class VehicleListView(ListView):
+    model = VehicleList
+    template_name = 'tmap/vehicle/vehicle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['vehicleList_list'] = VehicleList.objects.all()
+        return context
+
+
+class VehicleListUpdate(UpdateView):
+    model = VehicleList
+    fields = ['vehicleName', 'weight', 'vehicleType', 'zoneCode', 'skillPer', 'volume']
+    template_name = 'tmap/vehicle/vehicle_update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(VehicleListUpdate, self).get_context_data()
+        return context
+
+    def form_valid(self, form):
+        vehicle = form.save(commit=False)
+        vehicleid = vehicle.vehicleId
+        vehiclename = vehicle.vehicleName
+        weight = vehicle.weight
+        vehicletype = vehicle.vehicleType
+        zonecode = vehicle.zoneCode
+        skillper = vehicle.skillPer
+        volume = vehicle.volume
+        flag = vehicle.flag
+
+        if volume == '':
+            volume = 0
+
+        if skillper == '':
+            skillper = 0
+
+        if vehicletype == "상온":
+            vehicletype = "01"
+        elif vehicletype == "냉장/냉동":
+            vehicletype = "02"
+        else:
+            vehicletype = "99"
+
+        appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+
+        if flag == "200":
+            url = f"https://apis.openapi.sk.com/tms/vehicleInsert?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicletype}&zoneCode={zonecode}&skillPer={skillper}&volume={volume}"
+
+            headers = {
+                "accept": "application/json",
+                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+            }
+
+            response = requests.get(url, headers=headers)
+            response = response.json()
+
+            flag = response["resultCode"]
+            vehicle.flag = flag
+
+        vehicle.save()
+
+        return redirect('/tmap/vehicle/')
+
+
+def delete_VehicleList(request, pk):
+    vehicleList = get_object_or_404(VehicleList, pk=pk)
+    vehicleid = vehicleList.vehicleId
+    appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+
+    url = f"https://apis.openapi.sk.com/tms/vehicleDelete?appKey={appkey}&deleteFlag=2&vehicleId={vehicleid}"
+
+    headers = {
+        "accept": "application/json",
+        "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    vehicleList.delete()
+    return redirect('/tmap/vehicle/')
 
 
 class OrderListCreate(CreateView):
@@ -320,7 +411,6 @@ class OrderListCreate(CreateView):
         form.instance.zoneCode = zone_code
         form.instance.serviceTime = service_time
         form.instance.volume = delivery_volume
-
 
         order = form.save(commit=False)
 

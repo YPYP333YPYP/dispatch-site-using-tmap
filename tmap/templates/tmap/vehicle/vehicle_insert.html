@@ -38,7 +38,11 @@
             <br>
 
             <label>권역 코드 </label>
-            <input type="text" name="zone_code" id="zone_code">
+             <select id="zone_code" name="zone_code">
+                 {% for z in zoneCode %}
+                <option value="{{ z.code }}">{{ z.name }}</option>
+                 {% endfor %}
+            </select>
             <br>
 
 
@@ -51,7 +55,8 @@
             <input type="text" name="volume" id="volume">
             <p># 참고</p>
             <p>차량 유형 : 상온 - 냉장/냉동 - 기타 중 택1</p>
-            <p>숙련도 : 1 ~ 100 (10단위)</p>
+            <p>숙련도 : 1 ~ 100 (10단위) -> 배차 성공 횟수 기준</p>
+            <p>부피 : 단위(cbm) </p>
 
         </div>
 

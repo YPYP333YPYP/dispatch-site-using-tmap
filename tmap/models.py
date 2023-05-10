@@ -30,7 +30,7 @@ class ZoneList(models.Model):
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
-        return f'{self.pk} + {self.name}'
+        return f'{self.name}'
 
     def get_absolute_url(self):
         return f'/tmap/zone/{self.pk}'
@@ -41,13 +41,16 @@ class VehicleList(models.Model):
     vehicleName = models.CharField(max_length=100, null=True)
     weight = models.IntegerField(null=True)
     vehicleType = models.CharField(max_length=100, default="02")
-    zoneCode = models.CharField(max_length=100, null=True)
+    zoneCode = models.CharField(max_length=10, null=True)
     skillPer = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], null=True)
     volume = models.IntegerField(null=True)
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return f'{self.vehicleName}'
+
+    def get_absolute_url(self):
+        return f'/tmap/vehicle/{self.pk}'
 
 
 class OrderList(models.Model):
