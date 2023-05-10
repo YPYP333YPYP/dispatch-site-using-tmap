@@ -1,0 +1,40 @@
+{% extends 'tmap/base_full_width.html' %}
+{% block main_area %}
+{% for o in orderList_list %}
+
+<div class="card mb-4">
+    <div class="container">
+        <h2>배송지 번호 : {{ o.orderId }} </h2>
+        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+        <div class="card-body">
+            <p class="card-title">{{ o.orderId }}</p>
+            <p class="card-text">{{ o.orderName }}</p>
+            <p class="card-text">{{ o.geo }}</p>
+             <p class="card-text">{{ o.vehicleType }}</p>
+            <p class="card-text">{{ o.serviceTime }}</p>
+             <p class="card-text">{{ o.zoneCode }}</p>
+             <p class="card-text">{{ o.deliveryWeight }}</p>
+             <p class="card-text">{{ o.deliveryVolume }}</p>
+            <div>
+                <a role="button"
+                   class="btn btn-sm btn-info float-right"
+                   id="orderList-{{ o.pk }}-update-btn_200"
+                   href="/tmap/order/update/{{ o.pk }}">
+                    수정
+                </a> <a role="button"
+                        href="/tmap/order/delete/{{ o.pk }}"
+                        id="orderList-{{ o.pk }}-delete-modal-btn_200"
+                        class="btn btn-sm btn-danger float-right">
+
+                삭제
+            </a>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+{% endfor %}
+{% endblock %}

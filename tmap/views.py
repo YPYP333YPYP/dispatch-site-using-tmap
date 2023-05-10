@@ -316,11 +316,12 @@ class VehicleListView(ListView):
 
 class VehicleListUpdate(UpdateView):
     model = VehicleList
-    fields = ['vehicleName', 'weight', 'vehicleType', 'zoneCode', 'skillPer', 'volume']
+    fields = ['vehicleName', 'weight', 'vehicleType', 'skillPer', 'volume']
     template_name = 'tmap/vehicle/vehicle_update.html'
 
     def get_context_data(self, **kwargs):
         context = super(VehicleListUpdate, self).get_context_data()
+        context['zoneCode'] = ZoneList.objects.all()
         return context
 
     def form_valid(self, form):
@@ -390,6 +391,12 @@ class OrderListCreate(CreateView):
     model = OrderList
     fields = ['orderId', 'orderName', 'geo', 'deliveryWeight']
     template_name = 'tmap/order/order_insert.html'
+    success_url = reverse_lazy('tmap:order_insert')
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderListCreate, self).get_context_data()
+        context['zoneCode'] = ZoneList.objects.all()
+        return context
 
     def form_valid(self, form):
 
@@ -436,7 +443,89 @@ class OrderListCreate(CreateView):
         order.flag = flag
         order.save()
 
-        return redirect('/tmap/order/insert')
+        alert_script = f"alert('차량 입력 완료!');location.href='{self.success_url}';"
+        return HttpResponse(f"<script>{alert_script}</script>")
+
+
+class OrderListView(ListView):
+    model = OrderList
+    template_name = 'tmap/order/order.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orderList_list'] = OrderList.objects.all()
+        return context
+
+
+class OrderListUpdate(UpdateView):
+    model = OrderList
+    fields = ['orderName', 'geo', 'vehicleType', 'serviceTime', 'deliveryWeight','deliveryVolume']
+    template_name = 'tmap/order/order_update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderListUpdate, self).get_context_data()
+        context['zoneCode'] = ZoneList.objects.all()
+        return context
+
+    def form_valid(self, form):
+        order = form.save(commit=False)
+        geo = order.geo
+        orderid = order.orderId
+        ordername = order.orderName
+        address = geo.name
+        latitude = geo.latitude
+        longitude = geo.longitude
+        vehicletype = order.vehicleType
+        servicetime = order.serviceTime
+        zonecode = order.zoneCode
+        deliveryweight = order.deliveryWeight
+        deliveryvolume = order.deliveryVolume
+        flag = order.flag
+
+        if vehicletype == "상온":
+            vehicletype = "01"
+        elif vehicletype == "냉장/냉동":
+            vehicletype = "02"
+        else:
+            vehicletype = "99"
+
+        appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+
+        if flag == "200":
+            url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&vehicleType={vehicletype}&serviceTime={servicetime}&zoneCode={zonecode}&deliveryWeight={deliveryweight}&deliveryVolume={deliveryvolume}"
+
+            headers = {
+                "accept": "application/json",
+                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+            }
+
+            response = requests.get(url, headers=headers)
+            response = response.json()
+
+            flag = response["resultCode"]
+            order.flag = flag
+
+        order.save()
+
+        return redirect('/tmap/order/')
+
+
+def delete_OrderList(request, pk):
+    orderList = get_object_or_404(OrderList, pk=pk)
+    orderid = orderList.orderId
+    appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
+
+    url = f"https://apis.openapi.sk.com/tms/orderDelete?appKey={appkey}&deleteFlag=2&orderId={orderid}"
+
+    headers = {
+        "accept": "application/json",
+        "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    orderList.delete()
+    return redirect('/tmap/order/')
 
 
 class DispatchListCreate(CreateView):

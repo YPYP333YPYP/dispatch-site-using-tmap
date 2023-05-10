@@ -68,6 +68,9 @@ class OrderList(models.Model):
     def __str__(self):
         return f'{self.orderName}'
 
+    def get_absolute_url(self):
+        return f'/tmap/order/{self.pk}'
+
 
 class DispatchList(models.Model):
     orderList = models.ForeignKey(OrderList, blank=True, null=True, on_delete=models.CASCADE)

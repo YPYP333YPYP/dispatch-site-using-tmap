@@ -38,8 +38,12 @@
             <input type="text" name="vehicle_type" id="vehicle_type">
             <br>
 
-            <label>권역 코드 </label>
-            <input type="text" name="zone_code" id="zone_code">
+             <label>권역 코드 </label>
+             <select id="zone_code" name="zone_code">
+                 {% for z in zoneCode %}
+                <option value="{{ z.code }}">{{ z.name }}</option>
+                 {% endfor %}
+            </select>
             <br>
 
 

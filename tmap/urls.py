@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import GeoInformationView, CenterListCreate, CenterListView, ZoneListCreate, VehicleListCreate, OrderListCreate, DispatchListCreate, CenterListUpdate, delete_CenterList, ZoneListView
-from .views import ZoneListUpdate, delete_ZoneList, VehicleListView, VehicleListUpdate, delete_VehicleList
+from .views import GeoInformationView, CenterListCreate, CenterListView, ZoneListCreate, VehicleListCreate, \
+    OrderListCreate, DispatchListCreate, CenterListUpdate, delete_CenterList, ZoneListView, OrderListView, \
+    ZoneListUpdate, delete_ZoneList, VehicleListView, VehicleListUpdate, delete_VehicleList, OrderListUpdate, \
+    delete_OrderList
 from . import views
 
 app_name = 'tmap'
@@ -19,7 +21,10 @@ urlpatterns = [
     path('vehicle/', VehicleListView.as_view()),
     path('vehicle/update/<int:pk>/', VehicleListUpdate.as_view()),
     path('vehicle/delete/<int:pk>/', delete_VehicleList),
-    path('order/insert/', OrderListCreate.as_view()),
+    path('order/insert/', OrderListCreate.as_view(), name='order_insert'),
+    path('order/', OrderListView.as_view()),
+    path('order/update/<int:pk>/', OrderListUpdate.as_view()),
+    path('order/delete/<int:pk>/', delete_OrderList),
     path('dispatch/', DispatchListCreate.as_view()),
     path('map/', views.map_view, name='map_view'),
     path('get_marker_data/', views.get_marker_data)
