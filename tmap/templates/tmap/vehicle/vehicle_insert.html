@@ -37,12 +37,14 @@
             <input type="text" name="vehicle_type" id="vehicle_type">
             <br>
 
-            <label>권역 코드 </label>
+          <label>권역 코드 </label>
              <select id="zone_code" name="zone_code">
+                 <option value="" selected>선택하세요</option>
                  {% for z in zoneCode %}
                 <option value="{{ z.code }}">{{ z.name }}</option>
                  {% endfor %}
             </select>
+
             <br>
 
 

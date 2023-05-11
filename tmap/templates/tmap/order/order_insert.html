@@ -40,11 +40,13 @@
 
              <label>권역 코드 </label>
              <select id="zone_code" name="zone_code">
+                 <option value="" selected>선택하세요</option>
                  {% for z in zoneCode %}
                 <option value="{{ z.code }}">{{ z.name }}</option>
                  {% endfor %}
             </select>
             <br>
+
 
 
             <label>예상 시간 </label>

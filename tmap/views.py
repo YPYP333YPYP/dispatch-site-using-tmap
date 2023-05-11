@@ -62,8 +62,8 @@ class CenterListCreate(CreateView):
         latitude = geo.latitude
         longitude = geo.longitude
         centerid = center.centerId
-        centername = center.centerName.encode('utf-8')
-        address = geo.name.encode('utf-8')
+        centername = center.centerName
+        address = geo.name
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
         url = f'https://apis.openapi.sk.com/tms/centerInsert?appKey={appkey}&centerId={centerid}&centerName={centername}&address={address}&latitude={latitude}&longitude={longitude}'
@@ -414,6 +414,9 @@ class OrderListCreate(CreateView):
         else:
             vehicle_type = "99"
 
+        if service_time == '':
+            service_time = 0
+
         form.instance.vehicleType = vehicle_type
         form.instance.zoneCode = zone_code
         form.instance.serviceTime = service_time
@@ -443,7 +446,7 @@ class OrderListCreate(CreateView):
         order.flag = flag
         order.save()
 
-        alert_script = f"alert('차량 입력 완료!');location.href='{self.success_url}';"
+        alert_script = f"alert('배송지 입력 완료!');location.href='{self.success_url}';"
         return HttpResponse(f"<script>{alert_script}</script>")
 
 
@@ -488,6 +491,9 @@ class OrderListUpdate(UpdateView):
             vehicletype = "02"
         else:
             vehicletype = "99"
+
+        if servicetime == '':
+            servicetime = 0
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
@@ -536,6 +542,7 @@ class DispatchListCreate(CreateView):
     def form_valid(self, form):
         option_type = self.request.POST.get('option_type')
         equalization_type = self.request.POST.get('equalization_type')
+        allocation_type = self.request.POST.get('allocation_type')
 
         dispatch = form.save(commit=False)
 
@@ -545,7 +552,7 @@ class DispatchListCreate(CreateView):
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        url = f"https://apis.openapi.sk.com/tms/allocation?appKey={appkey}&allocationType=1&orderIdList={orderlist}&vehicleIdList={vehiclelist}&startTime={starttime}&optionType={option_type}&equalizationType={equalization_type}"
+        url = f"https://apis.openapi.sk.com/tms/allocation?appKey={appkey}&allocationType={allocation_type}&orderIdList={orderlist}&vehicleIdList={vehiclelist}&startTime={starttime}&optionType={option_type}&equalizationType={equalization_type}"
 
         headers = {
             "accept": "application/json",
@@ -557,7 +564,7 @@ class DispatchListCreate(CreateView):
         mappingkey = response["mappingKey"]
 
         flag = response["resultCode"]
-        dispatchList = DispatchList(orderList=orderlist, vehicleList=vehiclelist, startTime=starttime,
+        dispatchList = DispatchList(orderList=orderlist, vehicleList=vehiclelist, startTime=starttime, allocationType=allocation_type,
                                     optionType=option_type, equalizationType=equalization_type, mappingKey=mappingkey, flag=flag)
         dispatchList.save()
 
@@ -568,8 +575,8 @@ def get_marker_data(request):
 
     locations = GeoInformation.objects.all()
 
-
     marker_data = []
+
     for location in locations:
         lat = location.latitude
         lng = location.longitude
@@ -579,10 +586,7 @@ def get_marker_data(request):
             'iconSize': 'new Tmapv2.Size(24, 38)',
         })
 
-    # 변환된 위치 정보를 JSON 형태로 반환합니다.
     return JsonResponse({'marker_data': marker_data})
-
-# views.py
 
 
 def map_view(request):

@@ -47,7 +47,7 @@ class VehicleList(models.Model):
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
-        return f'{self.vehicleName}'
+        return f'{self.vehicleId}'
 
     def get_absolute_url(self):
         return f'/tmap/vehicle/{self.pk}'
@@ -66,7 +66,7 @@ class OrderList(models.Model):
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):
-        return f'{self.orderName}'
+        return f'{self.orderId}'
 
     def get_absolute_url(self):
         return f'/tmap/order/{self.pk}'
@@ -75,6 +75,7 @@ class OrderList(models.Model):
 class DispatchList(models.Model):
     orderList = models.ForeignKey(OrderList, blank=True, null=True, on_delete=models.CASCADE)
     vehicleList = models.ForeignKey(VehicleList, blank=True, null=True, on_delete=models.CASCADE)
+    allocationType = models.CharField(max_length=10, null=True, blank=False)
     startTime = models.CharField(max_length=10, blank=False, null=True)
     optionType = models.CharField(max_length=10, null=True)
     equalizationType = models.CharField(max_length=10, null=True)

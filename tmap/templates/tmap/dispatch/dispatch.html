@@ -16,15 +16,32 @@
 }
 
 
+
 </style>
+
+
 <h1>Create New Dispatch</h1>
 <hr/>
 {% load crispy_forms_tags %}
 <form method="post" enctype="multipart/form-data">{% csrf_token %}
     <table>
 
+        <div class="radio-group">
+            <label><h2>배차 방식 선택</h2></label>
+            <div class="row">
+                <div class="col">
+                    <label>기존 입력 데이터 기반 배차</label>
+                    <input type="radio" id="1" value="1" name="allocation_type">
+                </div>
+                <div class="col">
+                    <label>차량 - 배송지 직접 선택 배차</label>
+                    <input type="radio" id="2" value="2" name="allocation_type">
+                </div>
+            </div>
+        </div>
         {{ form.orderList|as_crispy_field }}
         {{ form.vehicleList|as_crispy_field }}
+        <p>< 시작시간(StartTime) 입력 시 "0000" 형식으로 입력해주세요. 예시) 13시 10분 -> 1310 ></p>
         {{ form.startTime|as_crispy_field }}
 
 
@@ -72,6 +89,8 @@ function showForm() {
   var form = document.getElementById("option");
   form.style.display = "block";
 }
+
+
 
 </script>
 
