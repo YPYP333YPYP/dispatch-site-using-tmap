@@ -5,7 +5,9 @@ import requests
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
-
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from PIL import Image
 
 class GeoInformationView(CreateView):
     model = GeoInformation
@@ -79,6 +81,25 @@ class CenterListCreate(CreateView):
         flag = response["resultCode"]
         center.flag = flag
 
+
+        url = f"https://apis.openapi.sk.com/tmap/staticMap"
+        params = {
+            'version': 1,
+            'appKey': 'lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx',
+            'width': '500',
+            'height': '300',
+            'zoom': '12',
+            'longitude': longitude,
+            'latitude': latitude,
+            'markers': str(longitude)+','+str(latitude)
+        }
+        response = requests.get(url, params=params)
+
+        image = Image.open(ContentFile(response.content))
+        filename = f"static_map_{centername}.jpg"
+        path = default_storage.save(filename, ContentFile(response.content))
+        center.image = path
+
         center.save()
         alert_script = f"alert('센터 입력 완료!');location.href='{self.success_url}';"
         return HttpResponse(f"<script>{alert_script}</script>")
@@ -96,7 +117,7 @@ class CenterListView(ListView):
 
 class CenterListUpdate(UpdateView):
     model = CenterList
-    fields = ['centerName', 'geo']
+    fields = ['centerName']
     template_name = 'tmap/center/center_update.html'
 
     def get_context_data(self, **kwargs):
@@ -128,6 +149,7 @@ class CenterListUpdate(UpdateView):
 
             flag = response["resultCode"]
             center.flag = flag
+
 
         center.save()
 

@@ -15,6 +15,7 @@ class CenterList(models.Model):
     centerId = models.CharField(max_length=100)
     centerName = models.CharField(max_length=100)
     geo = models.ForeignKey(GeoInformation, null=True, blank=True, on_delete=models.SET_NULL)
+    image = models.ImageField(upload_to='tmap/images/center/', blank=True)
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):

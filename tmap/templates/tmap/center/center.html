@@ -4,13 +4,14 @@
     <a href="/tmap/center/insert/" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm" style="flex:1;"><i
             class="fas fa-warehouse fa-sm text-white-50"></i>센터 추가</a>
 </div>
+
 {% for c in centerList_list %}
 
 <div class="card mb-4">
     {% if c.flag == "200" %}
     <div class="container">
         <h2>현재 선택된 센터</h2>
-        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+        <img class="card-img-top" src="{{c.image.url}}" alt="Card image cap" width="500px" height="300px">
         <div class="card-body">
             <p class="card-title">{{ c.centerId }}</p>
             <p class="card-text">{{ c.centerName }}</p>
@@ -32,11 +33,13 @@
 
         </div>
     </div>
+
+    <hr>
     {% endif %}
     {% if c.flag == "4003" %}
     <div class="container">
         <h2>입력된 센터</h2>
-        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+        <img class="card-img-top" src="{{c.image.url}}" alt="Card image cap" width="500px" height="300px">
         <div class="card-body">
             <p class="card-title">{{ c.centerId }}</p>
             <p class="card-text">{{ c.centerName }}</p>
