@@ -25,9 +25,10 @@ class CenterList(models.Model):
 
 
 class ZoneList(models.Model):
-    code = models.CharField(max_length=100 )
+    code = models.CharField(max_length=100)
     name = models.CharField(max_length=100, null=True)
     flag = models.CharField(max_length=10, null=True)
+    type = models.CharField(max_length=10, null=True)
 
     def __str__(self):
         return f'{self.name}'
@@ -89,5 +90,13 @@ class DispatchList(models.Model):
 class DispatchListResult(models.Model):
     orderList = models.ForeignKey(OrderList, blank=False, on_delete=models.CASCADE)
     vehicleList = models.ForeignKey(VehicleList, blank=False, on_delete=models.CASCADE)
-    routeList = models.CharField(max_length=1000)
+    expectedArrivalTime = models.DateTimeField(null=True)
+    expectedDepartureTime = models.DateTimeField(null=True)
+    start_latitude = models.FloatField(default=0.0)
+    start_longitude = models.FloatField(default=0.0)
+    end_latitude = models.FloatField(default=0.0)
+    end_longitude = models.FloatField(default=0.0)
+    vehicleName = models.CharField(max_length=100, null=True)
+    orderName = models.CharField(max_length=100, null=True)
+    address = models.CharField(max_length=100, null=True)
     flag = models.CharField(max_length=10, null=True)

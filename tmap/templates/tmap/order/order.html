@@ -1,5 +1,9 @@
 {% extends 'tmap/base_full_width.html' %}
 {% block main_area %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4" style="height:50px;">
+    <a href="/tmap/order/insert/" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm" style="flex:1;"><i
+            class="fas fa-dolly fa-sm text-white-50"></i>배송지 추가</a>
+</div>
 {% for o in orderList_list %}
 
 <div class="card mb-4">

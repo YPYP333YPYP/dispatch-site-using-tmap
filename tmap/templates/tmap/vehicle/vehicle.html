@@ -1,5 +1,9 @@
 {% extends 'tmap/base_full_width.html' %}
 {% block main_area %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4" style="height:50px;">
+    <a href="/tmap/vehicle/insert/" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm" style="flex:1;"><i
+            class="fas fa-truck fa-sm text-white-50"></i>차량 추가</a>
+</div>
 {% for v in vehicleList_list %}
 
 <div class="card mb-4">

@@ -153,7 +153,7 @@ def delete_CenterList(request, pk):
 
 class ZoneListCreate(CreateView):
     model = ZoneList
-    fields = ['code', 'name']
+    fields = ['code', 'name', 'type']
     template_name = 'tmap/zone/zone_insert.html'
     success_url = reverse_lazy('tmap:zone_insert')
 
@@ -162,6 +162,17 @@ class ZoneListCreate(CreateView):
 
         name = zone.name
         code = zone.code
+        type = zone.type
+
+        if type == "1":
+            type="city_do"
+        elif type == "2":
+            type="gu_gun"
+        elif type == "3":
+            type="legalDong"
+        else:
+            type="adminDong"
+
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
         url = f'https://apis.openapi.sk.com/tms/zoneInsert?appKey={appkey}&code={code}&name={name}'
 
@@ -175,7 +186,7 @@ class ZoneListCreate(CreateView):
 
         flag = response["resultCode"]
         zone.flag = flag
-
+        zone.type = type
         zone.save()
 
         alert_script = f"alert('권역 입력 완료!');location.href='{self.success_url}';"
@@ -194,7 +205,7 @@ class ZoneListView(ListView):
 
 class ZoneListUpdate(UpdateView):
     model = ZoneList
-    fields = ['name']
+    fields = ['type', 'name']
     template_name = 'tmap/zone/zone_update.html'
 
     def get_context_data(self, **kwargs):

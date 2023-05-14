@@ -1,16 +1,24 @@
 {% extends 'tmap/base.html' %}
 {% block main_area %}
-    {% load crispy_forms_tags %}
-    <div align="center">
-        <h2>ZonList</h2>
-        <form method="post" enctype="multipart/form-data">{% csrf_token %}
+{% load crispy_forms_tags %}
+<div align="center">
+    <h2>ZonList</h2>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
         <table>
 
-            {{ form | crispy }}
+            {{ form.code|as_crispy_field }}
+            {{ form.name|as_crispy_field }}
+            <p><strong>권역 분류 (type) 입력 참고 사항></strong></p>
+            <p>1. 시,도 2. 시,군,구 3. 법정동 4. 행정동</p>
+            {{ form.type|as_crispy_field }}
+
 
         </table>
+        <button class="btn btn-success float-right "> <a href="/tmap/zone/" class="text-white" style="flex:1;"><i
+            class="fas fa-badge-check fa-sm text-white-50"></i>돌아가기</a></button>
+
         <button type="submit" class="btn btn-success float-right">Submit</button>
     </form>
-    </div>
+</div>
 
 {% endblock %}
