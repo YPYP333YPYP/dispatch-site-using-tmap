@@ -284,6 +284,7 @@ class VehicleListCreate(CreateView):
     fields = ['vehicleId', 'vehicleName', 'vehicleType', 'zoneCode']
     template_name = 'tmap/vehicle/vehicle_insert.html'
     success_url = reverse_lazy('tmap:vehicle_insert')
+
     def get_context_data(self, **kwargs):
         context = super(VehicleListCreate, self).get_context_data()
 
@@ -353,12 +354,13 @@ class VehicleListUpdate(UpdateView):
         vehiclename = vehicle.vehicleName
         vehicledetail = vehicle.vehicleType
         weight = vehicledetail.weight
+        zone = vehicle.zoneCode
         vehicletype = vehicledetail.type
         skillper = vehicle.skillPer
         volume = vehicledetail.volume
         flag = vehicle.flag
 
-        zone_code = self.request.POST.get('zone_code')
+        zone_code = zone.code
 
         if skillper == '':
             skillper = 0
@@ -366,7 +368,7 @@ class VehicleListUpdate(UpdateView):
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
         if flag == "200":
-            url = f"https://apis.openapi.sk.com/tms/vehicleInsert?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicletype}&zoneCode={zonecode}&skillPer={skillper}&volume={volume}"
+            url = f"https://apis.openapi.sk.com/tms/vehicleInsert?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicletype}&zoneCode={zone_code}&skillPer={skillper}&volume={volume}"
 
             headers = {
                 "accept": "application/json",
@@ -415,30 +417,18 @@ class OrderListCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(OrderListCreate, self).get_context_data()
-        context['zoneCode'] = ZoneList.objects.all()
         return context
 
     def form_valid(self, form):
 
-        vehicle_type = self.request.POST.get('vehicle_type')
         service_time = self.request.POST.get('service_time')
-        zone_code = self.request.POST.get('zone_code')
         delivery_volume = self.request.POST.get('delivery_volume')
         if delivery_volume == '':
             delivery_volume = 0
 
-        if vehicle_type == "상온":
-            vehicle_type = "01"
-        elif vehicle_type == "냉장/냉동":
-            vehicle_type = "02"
-        else:
-            vehicle_type = "99"
-
         if service_time == '':
             service_time = 0
 
-        form.instance.vehicleType = vehicle_type
-        form.instance.zoneCode = zone_code
         form.instance.serviceTime = service_time
         form.instance.volume = delivery_volume
 
@@ -453,7 +443,7 @@ class OrderListCreate(CreateView):
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&vehicleType={vehicle_type}&serviceTime={service_time}&zoneCode={zone_code}&deliveryWeight={delivery_weight}&deliveryVolume={delivery_volume}"
+        url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&serviceTime={service_time}&deliveryWeight={delivery_weight}&deliveryVolume={delivery_volume}"
 
         headers = {
             "accept": "application/json",
@@ -498,19 +488,10 @@ class OrderListUpdate(UpdateView):
         address = geo.name
         latitude = geo.latitude
         longitude = geo.longitude
-        vehicletype = order.vehicleType
         servicetime = order.serviceTime
-        zonecode = order.zoneCode
         deliveryweight = order.deliveryWeight
         deliveryvolume = order.deliveryVolume
         flag = order.flag
-
-        if vehicletype == "상온":
-            vehicletype = "01"
-        elif vehicletype == "냉장/냉동":
-            vehicletype = "02"
-        else:
-            vehicletype = "99"
 
         if servicetime == '':
             servicetime = 0
@@ -518,7 +499,7 @@ class OrderListUpdate(UpdateView):
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
         if flag == "200":
-            url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&vehicleType={vehicletype}&serviceTime={servicetime}&zoneCode={zonecode}&deliveryWeight={deliveryweight}&deliveryVolume={deliveryvolume}"
+            url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&serviceTime={servicetime}&deliveryWeight={deliveryweight}&deliveryVolume={deliveryvolume}"
 
             headers = {
                 "accept": "application/json",
@@ -592,14 +573,13 @@ class DispatchListCreate(CreateView):
 
 
 def get_marker_data(request):
-
-    locations = GeoInformation.objects.all()
+    locations = OrderList.objects.all()
 
     marker_data = []
 
     for location in locations:
-        lat = location.latitude
-        lng = location.longitude
+        lat = location.geo.latitude
+        lng = location.geo.longitude
         marker_data.append({
             'position': f'new Tmapv2.LatLng({lat}, {lng})',
             'icon': 'http://tmapapi.sktelecom.com/upload/tmap/marker/pin_r_m_s.png',
@@ -609,5 +589,4 @@ def get_marker_data(request):
     return JsonResponse({'marker_data': marker_data})
 
 
-def map_view(request):
-    return render(request, 'tmap/main.html')
+

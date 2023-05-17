@@ -68,12 +68,9 @@ class OrderList(models.Model):
     orderId = models.CharField(max_length=100, null=True)
     orderName = models.CharField(max_length=100, null=True)
     geo = models.ForeignKey(GeoInformation, null=True, blank=True, on_delete=models.CASCADE)
-    vehicleType = models.CharField(max_length=100, default="02")
     serviceTime = models.IntegerField(null=True)
-    zoneCode = models.CharField(max_length=100, null=True)
     deliveryWeight = models.CharField(max_length=100, null=True)
     deliveryVolume = models.CharField(max_length=100, null=True)
-    updateDate = models.DateTimeField(null=True)
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):

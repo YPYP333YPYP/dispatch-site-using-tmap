@@ -15,6 +15,7 @@
   margin-bottom: 10px;
 }
 
+
 </style>
 <h1>Create New Order</h1>
 <hr/>
@@ -34,36 +35,23 @@
         <br><br>
         <div id="option" style="display:none;">
 
-           <label>차량 유형 </label>
-            <input type="text" name="vehicle_type" id="vehicle_type">
+
             <br>
-
-             <label>권역 코드 </label>
-             <select id="zone_code" name="zone_code">
-                 <option value="" selected>선택하세요</option>
-                 {% for z in zoneCode %}
-                <option value="{{ z.code }}">{{ z.name }}</option>
-                 {% endfor %}
-            </select>
-            <br>
-
-
 
             <label>예상 시간 </label>
             <input type="text" name="service_time" id="service_time">
             <br>
 
-
             <label>배송 부피 </label>
             <input type="text" name="delivery_volume" id="delivery_volume">
             <p># 참고</p>
-            <p>차량 유형 : 상온 - 냉장/냉동 - 기타 중 택1</p>
             <p>예상 시간 : 단위(분)</p>
 
         </div>
 
     </table>
-
+    <button class="btn btn-success float-right "><a href="/tmap/order/" class="text-white" style="flex:1;"><i
+            class="fas fa-badge-check fa-sm text-white-50"></i>돌아가기</a></button>
     <button type="submit" class="btn btn-success float-right">Submit</button>
 </form>
 
@@ -72,6 +60,7 @@ function showForm() {
   var form = document.getElementById("option");
   form.style.display = "block";
 }
+
 </script>
 
 {% endblock %}

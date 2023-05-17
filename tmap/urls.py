@@ -26,7 +26,6 @@ urlpatterns = [
     path('order/update/<int:pk>/', OrderListUpdate.as_view()),
     path('order/delete/<int:pk>/', delete_OrderList),
     path('dispatch/', DispatchListCreate.as_view()),
-    path('map/', views.map_view, name='map_view'),
     path('get_marker_data/', views.get_marker_data)
 ]
 
