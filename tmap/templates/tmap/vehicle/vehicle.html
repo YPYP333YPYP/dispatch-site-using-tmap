@@ -9,35 +9,36 @@
 <div class="card mb-4">
     <div class="container">
         <h2>차량 번호 : {{ v.vehicleId }} </h2>
-        <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-        <div class="card-body">
-            <p class="card-title">{{ v.vehicleId }}</p>
-            <p class="card-text">{{ v.vehicleName }}</p>
-            <p class="card-text">{{ v.weight }}</p>
-             <p class="card-text">{{ v.vehicleType }}</p>
-             <p class="card-text">{{ v.zoneCode }}</p>
-             <p class="card-text">{{ v.skillPer }}</p>
-             <p class="card-text">{{ v.volume }}</p>
-            <div>
-                <a role="button"
-                   class="btn btn-sm btn-info float-right"
-                   id="vehicleList-{{ v.pk }}-update-btn_200"
-                   href="/tmap/vehicle/update/{{ v.pk }}">
-                    수정
-                </a> <a role="button"
-                        href="/tmap/vehicle/delete/{{ v.pk }}"
-                        id="vehicleList-{{ v.pk }}-delete-modal-btn_200"
-                        class="btn btn-sm btn-danger float-right">
+        <div class="row">
+            <img class="img-fluid" src="{{ v.vehicleType.image.url }}" alt="Card image cap">
+            <div class="card-body">
+                <p class="card-text"><b>차량 이름 : {{ v.vehicleName }}</b></p>
+                <p class="card-text">차량 종류 : {{ v.vehicleType.name }}</p>
+                <p class="card-text">적재 중량 : {{ v.vehicleType.weight }}</p>
+                <p class="card-text">적재 부피 : {{ v.vehicleType.volume }}</p>
+                <p class="card-text">권역 : {{ v.zoneCode }}</p>
+                <p class="card-text">숙련도 : {{ v.skillPer }}</p>
 
-                삭제
-            </a>
             </div>
-
         </div>
+        <div>
+            <a role="button"
+               class="btn btn-sm btn-info float-right mb-3"
+               id="vehicleList-{{ v.pk }}-update-btn_200"
+               href="/tmap/vehicle/update/{{ v.pk }}">
+                수정
+            </a> <a role="button"
+                    href="/tmap/vehicle/delete/{{ v.pk }}"
+                    id="vehicleList-{{ v.pk }}-delete-modal-btn_200"
+                    class="btn btn-sm btn-danger float-right mb-3">
+
+            삭제
+        </a>
+        </div>
+
     </div>
-
-
 </div>
+
 
 {% endfor %}
 {% endblock %}

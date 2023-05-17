@@ -1,4 +1,4 @@
-{% extends 'tmap/base_full_width.html' %}
+{% extends 'tmap/base.html' %}
 {% block main_area %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4" style="height:50px;">
     <a href="/tmap/center/insert/" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm" style="flex:1;"><i
@@ -6,26 +6,24 @@
 </div>
 
 {% for c in centerList_list %}
-
+{% if c.flag == "200" %}
 <div class="card mb-4">
-    {% if c.flag == "200" %}
     <div class="container">
-        <h2>현재 선택된 센터</h2>
-        <img class="card-img-top" src="{{c.image.url}}" alt="Card image cap" width="500px" height="300px">
+        <h2>현재 선택된 센터 - {{ c.centerId }}</h2>
+        <img class="card-img" src="{{c.image.url}}" alt="Card image cap" width="500px" height="300px">
         <div class="card-body">
-            <p class="card-title">{{ c.centerId }}</p>
-            <p class="card-text">{{ c.centerName }}</p>
-            <p class="card-text">{{ c.geo }}</p>
+            <p class="card-text">센터 이름 : {{ c.centerName }}</p>
+            <p class="card-text">센터 주소 : {{ c.geo }}</p>
             <div>
                 <a role="button"
-                   class="btn btn-sm btn-info float-right"
+                   class="btn btn-sm btn-info float-right  mb-3"
                    id="centerList-{{ c.pk }}-update-btn_200"
                    href="/tmap/center/update/{{ c.pk }}/">
                     수정
                 </a> <a role="button"
                         href="/tmap/center/delete/{{ c.pk }}"
                         id="comment-{{ c.pk }}-delete-modal-btn_200"
-                        class="btn btn-sm btn-danger float-right">
+                        class="btn btn-sm btn-danger float-right  mb-3">
 
                 삭제
             </a>
@@ -33,35 +31,41 @@
 
         </div>
     </div>
-
-    <hr>
     {% endif %}
-    {% if c.flag == "4003" %}
+    {% endfor %}
+</div>
+
+<hr>
+{% for c in centerList_list %}
+{% if c.flag == "4003" %}
+<div class="card mb-4">
     <div class="container">
-        <h2>입력된 센터</h2>
-        <img class="card-img-top" src="{{c.image.url}}" alt="Card image cap" width="500px" height="300px">
+        <h2>입력된 센터 - {{ c.centerId }}</h2>
+        <img class="card-img" src="{{c.image.url}}" alt="Card image cap" width="500px" height="300px">
         <div class="card-body">
-            <p class="card-title">{{ c.centerId }}</p>
-            <p class="card-text">{{ c.centerName }}</p>
-            <p class="card-text">{{ c.geo }}</p>
+            <p class="card-text">센터 이름 : {{ c.centerName }}</p>
+            <p class="card-text">센터 주소 : {{ c.geo }}</p>
             <div>
                 <a role="button"
-                   class="btn btn-sm btn-info float-right"
+                   class="btn btn-sm btn-info float-right  mb-3"
                    id="centerList-{{ c.pk }}-update-btn_4003"
                    href="/tmap/center/update/{{ c.pk }}/">
                     수정
                 </a> <a role="button"
                         href="/tmap/center/delete/{{ c.pk }}"
                         id="comment-{{ c.pk }}-delete-modal-btn_4003"
-                        class="btn btn-sm btn-danger float-right">
+                        class="btn btn-sm btn-danger float-right mb-3">
 
                 삭제
             </a>
             </div>
         </div>
     </div>
-    {% endif %}
 </div>
+
+
+{% endif %}
+
 
 {% endfor %}
 {% endblock %}

@@ -38,14 +38,23 @@ class ZoneList(models.Model):
         return f'/tmap/zone/{self.pk}'
 
 
+class VehicleDetail(models.Model):
+    name = models.CharField(max_length=100, null=True)
+    image = models.ImageField(upload_to='tmap/images/vehicle')
+    weight = models.FloatField(null=True)
+    volume = models.IntegerField(null=True)
+    type = models.CharField(max_length=10, null=True)
+
+    def __str__(self):
+        return f'{self.name}'
+
+
 class VehicleList(models.Model):
     vehicleId = models.CharField(max_length=100, null=True)
     vehicleName = models.CharField(max_length=100, null=True)
-    weight = models.IntegerField(null=True)
-    vehicleType = models.CharField(max_length=100, default="02")
-    zoneCode = models.CharField(max_length=10, null=True)
+    vehicleType = models.ForeignKey(VehicleDetail, null=True, blank=True, on_delete=models.CASCADE)
+    zoneCode = models.ForeignKey(ZoneList, null=True, blank=True, on_delete=models.SET_NULL)
     skillPer = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], null=True)
-    volume = models.IntegerField(null=True)
     flag = models.CharField(max_length=10, null=True)
 
     def __str__(self):

@@ -97,7 +97,7 @@ class CenterListCreate(CreateView):
 
         image = Image.open(ContentFile(response.content))
         filename = f"static_map_{centername}.jpg"
-        path = default_storage.save(filename, ContentFile(response.content))
+        path = default_storage.save(f'tmap/images/center/{filename}', ContentFile(response.content))
         center.image = path
 
         center.save()
@@ -281,46 +281,36 @@ def delete_ZoneList(request, pk):
 
 class VehicleListCreate(CreateView):
     model = VehicleList
-    fields = ['vehicleId', 'vehicleName', 'weight']
+    fields = ['vehicleId', 'vehicleName', 'vehicleType', 'zoneCode']
     template_name = 'tmap/vehicle/vehicle_insert.html'
     success_url = reverse_lazy('tmap:vehicle_insert')
-
     def get_context_data(self, **kwargs):
         context = super(VehicleListCreate, self).get_context_data()
-        context['zoneCode'] = ZoneList.objects.all()
+
         return context
 
     def form_valid(self, form):
-
-        vehicle_type = self.request.POST.get('vehicle_type')
-        zone_code = self.request.POST.get('zone_code')
         skill_per = self.request.POST.get('skill_per')
+
         if skill_per == '':
             skill_per = 0
-        volume = self.request.POST.get('volume')
-        if volume == '':
-            volume = 0
 
-        if vehicle_type == "상온":
-            vehicle_type = "01"
-        elif vehicle_type == "냉장/냉동":
-            vehicle_type = "02"
-        else:
-            vehicle_type = "99"
-
-        form.instance.vehicleType = vehicle_type
-
-        form.instance.zoneCode = zone_code
         form.instance.skillPer = skill_per
-        form.instance.volume = int(volume)
 
         vehicle = form.save(commit=False)
+        vehicledetail = vehicle.vehicleType
+        weight = int(vehicledetail.weight)
+        volume = vehicledetail.volume
+        zone = vehicle.zoneCode
+        vehicle_type = vehicledetail.type
         vehicleid = vehicle.vehicleId
         vehiclename = vehicle.vehicleName
-        weight = int(vehicle.weight)
+
+        zone_code = zone.code
+
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        url = f"https://apis.openapi.sk.com/tms/vehicleInsert?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicle_type}&zoneCode={zone_code}&skillPer={skill_per}&volume={volume}"
+        url = f"https://apis.openapi.sk.com/tms/vehicleInsert?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicle_type}&zoneCode={zone_code}&skillPer={skill_per}&volume={volume} "
 
         headers = {
             "accept": "application/json",
@@ -344,42 +334,34 @@ class VehicleListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['vehicleList_list'] = VehicleList.objects.all()
+
         return context
 
 
 class VehicleListUpdate(UpdateView):
     model = VehicleList
-    fields = ['vehicleName', 'weight', 'vehicleType', 'skillPer', 'volume']
+    fields = ['vehicleName', 'vehicleType', 'zoneCode','skillPer']
     template_name = 'tmap/vehicle/vehicle_update.html'
 
     def get_context_data(self, **kwargs):
         context = super(VehicleListUpdate, self).get_context_data()
-        context['zoneCode'] = ZoneList.objects.all()
         return context
 
     def form_valid(self, form):
         vehicle = form.save(commit=False)
         vehicleid = vehicle.vehicleId
         vehiclename = vehicle.vehicleName
-        weight = vehicle.weight
-        vehicletype = vehicle.vehicleType
-        zonecode = vehicle.zoneCode
+        vehicledetail = vehicle.vehicleType
+        weight = vehicledetail.weight
+        vehicletype = vehicledetail.type
         skillper = vehicle.skillPer
-        volume = vehicle.volume
+        volume = vehicledetail.volume
         flag = vehicle.flag
 
-        if volume == '':
-            volume = 0
+        zone_code = self.request.POST.get('zone_code')
 
         if skillper == '':
             skillper = 0
-
-        if vehicletype == "상온":
-            vehicletype = "01"
-        elif vehicletype == "냉장/냉동":
-            vehicletype = "02"
-        else:
-            vehicletype = "99"
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
@@ -396,7 +378,12 @@ class VehicleListUpdate(UpdateView):
 
             flag = response["resultCode"]
             vehicle.flag = flag
-
+        if zone_code == "":
+            zone = None
+        else:
+            zone = ZoneList.objects.get(code=zone_code)
+        vehicle.zoneCode = zone
+        vehicle.flag = flag
         vehicle.save()
 
         return redirect('/tmap/vehicle/')
