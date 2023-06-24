@@ -69,7 +69,9 @@ class OrderList(models.Model):
     orderName = models.CharField(max_length=100, null=True)
     geo = models.ForeignKey(GeoInformation, null=True, blank=True, on_delete=models.CASCADE)
     serviceTime = models.IntegerField(null=True)
+    vehicleType = models.CharField(max_length=10,null=True)
     deliveryWeight = models.CharField(max_length=100, null=True)
+    zoneCode = models.ForeignKey(ZoneList, null=True, blank=True, on_delete=models.SET_NULL)
     deliveryVolume = models.CharField(max_length=100, null=True)
     flag = models.CharField(max_length=10, null=True)
 
@@ -87,16 +89,6 @@ class DispatchList(models.Model):
     startTime = models.CharField(max_length=10, blank=False, null=True)
     optionType = models.CharField(max_length=10, null=True)
     equalizationType = models.CharField(max_length=10, null=True)
-    mappingKey = models.CharField(max_length=100, null=True)
-    flag = models.CharField(max_length=10, null=True)
-
-    def __str__(self):
-        return f'{self.orderList}'
-
-
-class DispatchListResult(models.Model):
-    orderList = models.ForeignKey(OrderList, blank=False, on_delete=models.CASCADE)
-    vehicleList = models.ForeignKey(VehicleList, blank=False, on_delete=models.CASCADE)
     expectedArrivalTime = models.DateTimeField(null=True)
     expectedDepartureTime = models.DateTimeField(null=True)
     start_latitude = models.FloatField(default=0.0)
@@ -106,4 +98,9 @@ class DispatchListResult(models.Model):
     vehicleName = models.CharField(max_length=100, null=True)
     orderName = models.CharField(max_length=100, null=True)
     address = models.CharField(max_length=100, null=True)
+    mappingKey = models.CharField(max_length=100, null=True)
     flag = models.CharField(max_length=10, null=True)
+
+    def __str__(self):
+        return f'{self.pk}'
+

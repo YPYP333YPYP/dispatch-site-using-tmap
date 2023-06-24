@@ -59,6 +59,7 @@
             <p class="card-text"><b>배송지 이름 : {{ o.orderName }}</b></p>
             <p class="card-text">배송지 주소 : {{ o.geo }}</p>
               <p class="card-text">배송지 배달 중량 : {{ o.deliveryWeight }}</p>
+            <p class="card-text">권역 : {{ o.zoneCode }}</p>
              {% if o.deliverVolume != null %}
              <p class="card-text">배송지 배달 부피 : {{ o.deliveryVolume }}</p>
             {% endif %}

@@ -39,8 +39,17 @@
                 </div>
             </div>
         </div>
-        {{ form.orderList|as_crispy_field }}
-        {{ form.vehicleList|as_crispy_field }}
+        <div class="row">
+            <div>
+            <label>배송지 직접 입력</label>
+            <input class="text" id="orderListId" name="orderListId">
+                </div>
+            <p>&nbsp | &nbsp</p>
+            <div>
+            <label>차량 직접 입력</label>
+            <input class="text" id="vehicleListId" name="vehicleListId">
+        </div>
+            </div>
         <p>< 시작시간(StartTime) 입력 시 "0000" 형식으로 입력해주세요. 예시) 13시 10분 -> 1310 ></p>
         {{ form.startTime|as_crispy_field }}
 

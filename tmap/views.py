@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import GeoInformation, CenterList, ZoneList, VehicleList, OrderList, DispatchList
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, TemplateView
 import requests
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from PIL import Image
+
 
 class GeoInformationView(CreateView):
     model = GeoInformation
@@ -243,19 +244,19 @@ class ZoneListUpdate(UpdateView):
         flag = zone.flag
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        if flag == "200":
-            url = f"https://apis.openapi.sk.com/tms/zoneUpdate?appKey={appkey}&code={code}&name={name}"
 
-            headers = {
-                "accept": "application/json",
-                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
-            }
+        url = f"https://apis.openapi.sk.com/tms/zoneUpdate?appKey={appkey}&code={code}&name={name}"
 
-            response = requests.get(url, headers=headers)
-            response = response.json()
+        headers = {
+            "accept": "application/json",
+            "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+        }
 
-            flag = response["resultCode"]
-            zone.flag = flag
+        response = requests.get(url, headers=headers)
+        response = response.json()
+
+        flag = response["resultCode"]
+        zone.flag = flag
 
         zone.save()
 
@@ -367,25 +368,19 @@ class VehicleListUpdate(UpdateView):
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        if flag == "200":
-            url = f"https://apis.openapi.sk.com/tms/vehicleInsert?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicletype}&zoneCode={zone_code}&skillPer={skillper}&volume={volume}"
+        url = f"https://apis.openapi.sk.com/tms/vehicleUpdate?appKey={appkey}&vehicleId={vehicleid}&vehicleName={vehiclename}&weight={weight}&vehicleType={vehicletype}&zoneCode={zone_code}&skillPer={skillper}&volume={volume}"
 
-            headers = {
-                "accept": "application/json",
-                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
-            }
+        headers = {
+            "accept": "application/json",
+            "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+        }
 
-            response = requests.get(url, headers=headers)
-            response = response.json()
+        response = requests.get(url, headers=headers)
+        response = response.json()
 
-            flag = response["resultCode"]
-            vehicle.flag = flag
-        if zone_code == "":
-            zone = None
-        else:
-            zone = ZoneList.objects.get(code=zone_code)
-        vehicle.zoneCode = zone
+        flag = response["resultCode"]
         vehicle.flag = flag
+
         vehicle.save()
 
         return redirect('/tmap/vehicle/')
@@ -411,7 +406,7 @@ def delete_VehicleList(request, pk):
 
 class OrderListCreate(CreateView):
     model = OrderList
-    fields = ['orderId', 'orderName', 'geo', 'deliveryWeight']
+    fields = ['orderId', 'orderName', 'geo', 'deliveryWeight', 'zoneCode', 'vehicleType']
     template_name = 'tmap/order/order_insert.html'
     success_url = reverse_lazy('tmap:order_insert')
 
@@ -440,10 +435,13 @@ class OrderListCreate(CreateView):
         latitude = order.geo.latitude
         longitude = order.geo.longitude
         delivery_weight = order.deliveryWeight
+        vehicle_type = order.vehicleType
+        zonecode = order.zoneCode.code
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&serviceTime={service_time}&deliveryWeight={delivery_weight}&deliveryVolume={delivery_volume}"
+        url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&vehicleType={vehicle_type}&serviceTime={service_time}&zoneCode={zonecode}&deliveryWeight={delivery_weight}&deliveryVolume={delivery_volume}"
+
 
         headers = {
             "accept": "application/json",
@@ -472,12 +470,11 @@ class OrderListView(ListView):
 
 class OrderListUpdate(UpdateView):
     model = OrderList
-    fields = ['orderName', 'geo', 'vehicleType', 'serviceTime', 'deliveryWeight','deliveryVolume']
+    fields = ['orderName', 'geo', 'serviceTime', 'deliveryWeight','deliveryVolume','zoneCode','vehicleType']
     template_name = 'tmap/order/order_update.html'
 
     def get_context_data(self, **kwargs):
         context = super(OrderListUpdate, self).get_context_data()
-        context['zoneCode'] = ZoneList.objects.all()
         return context
 
     def form_valid(self, form):
@@ -491,6 +488,7 @@ class OrderListUpdate(UpdateView):
         servicetime = order.serviceTime
         deliveryweight = order.deliveryWeight
         deliveryvolume = order.deliveryVolume
+        zonecode = order.zoneCode
         flag = order.flag
 
         if servicetime == '':
@@ -498,19 +496,19 @@ class OrderListUpdate(UpdateView):
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        if flag == "200":
-            url = f"https://apis.openapi.sk.com/tms/orderInsert?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&serviceTime={servicetime}&deliveryWeight={deliveryweight}&deliveryVolume={deliveryvolume}"
 
-            headers = {
-                "accept": "application/json",
-                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
-            }
+        url = f"https://apis.openapi.sk.com/tms/orderUpdate?appKey={appkey}&orderId={orderid}&orderName={ordername}&address={address}&latitude={latitude}&longitude={longitude}&serviceTime={servicetime}&deliveryWeight={deliveryweight}&deliveryVolume={deliveryvolume}&zoneCode={zonecode}"
 
-            response = requests.get(url, headers=headers)
-            response = response.json()
+        headers = {
+            "accept": "application/json",
+            "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+        }
 
-            flag = response["resultCode"]
-            order.flag = flag
+        response = requests.get(url, headers=headers)
+        response = response.json()
+
+        flag = response["resultCode"]
+        order.flag = flag
 
         order.save()
 
@@ -537,23 +535,25 @@ def delete_OrderList(request, pk):
 
 class DispatchListCreate(CreateView):
     model = DispatchList
-    fields = ['orderList', 'vehicleList', 'startTime']
+    fields = ['startTime']
     template_name = 'tmap/dispatch/dispatch.html'
 
     def form_valid(self, form):
         option_type = self.request.POST.get('option_type')
         equalization_type = self.request.POST.get('equalization_type')
         allocation_type = self.request.POST.get('allocation_type')
-
+        orderListId = self.request.POST.get("orderListId")
+        vehicleListId = self.request.POST.get("vehicleListId")
         dispatch = form.save(commit=False)
-
-        orderlist = dispatch.orderList
-        vehiclelist = dispatch.vehicleList
         starttime = dispatch.startTime
+
+        orderlist = OrderList.objects.filter(orderId=orderListId).first()
+        vehiclelist = VehicleList.objects.filter(vehicleId=vehicleListId).first()
+
 
         appkey = "lnmQwO8Vzy3E1WkBTNCUv9JWkUEwMQxF4wsCcRjx"
 
-        url = f"https://apis.openapi.sk.com/tms/allocation?appKey={appkey}&allocationType={allocation_type}&orderIdList={orderlist}&vehicleIdList={vehiclelist}&startTime={starttime}&optionType={option_type}&equalizationType={equalization_type}"
+        url = f"https://apis.openapi.sk.com/tms/allocation?appKey={appkey}&allocationType={allocation_type}&orderIdList={orderListId}&vehicleIdList={vehicleListId}&startTime={starttime}&optionType={option_type}&equalizationType={equalization_type}"
 
         headers = {
             "accept": "application/json",
@@ -565,11 +565,54 @@ class DispatchListCreate(CreateView):
         mappingkey = response["mappingKey"]
 
         flag = response["resultCode"]
+        message = response["resultMessage"]
+
+        if flag != "200":
+            alert_script = f"alert('{message}.!');location.href='{self.success_url}';"
+            return HttpResponse(f"<script>{alert_script}</script>")
+        else:
+            url = f"https://apis.openapi.sk.com/tms/allocationData?appKey={appkey}&mappingKey={mappingkey}&routeYn=N"
+
+            headers = {
+                "accept": "application/json",
+                "appKey": "e8wHh2tya84M88aReEpXCa5XTQf3xgo01aZG39k5"
+            }
+
+            response = requests.get(url, headers=headers)
+            response = response.json()
+
+            expectedArrivalTime = response["vehicleList"]["orderList"][0]["expectedArrivalTime"]
+            expectedDepartureTime = response["vehicleList"]["orderList"][0]["expectedDepartureTime"]
+            end_latitude = response["vehicleList"]["orderList"][0]["latitude"]
+            end_longitude = response["vehicleList"]["orderList"][0]["longitude"]
+            vehicleName = response["vehicleList"]["vehicleName"]
+            orderName = response["vehicleList"]["orderList"][0]["orderName"]
+            address = response["vehicleList"]["orderList"][0]["address"]
+
+        center = CenterList.objects.filter(flag=200)
+        start_latitude = center.geo.latitude
+        start_longitude = center.geo.longitude
+
         dispatchList = DispatchList(orderList=orderlist, vehicleList=vehiclelist, startTime=starttime, allocationType=allocation_type,
-                                    optionType=option_type, equalizationType=equalization_type, mappingKey=mappingkey, flag=flag)
+                                    optionType=option_type, equalizationType=equalization_type, mappingKey=mappingkey, flag=flag,
+                                    expectedArrivalTime=expectedArrivalTime, expectedDepartureTime=expectedDepartureTime,
+                                    start_latitude=start_latitude, start_longitude=start_longitude, end_latitude=end_latitude, end_longitude=end_longitude,
+                                    vehicleName=vehicleName, orderName=orderName, address=address)
         dispatchList.save()
 
         return redirect('/tmap/dispatch/')
+
+
+class MainListView(TemplateView):
+    template_name = 'tmap/main.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orderList'] = OrderList.objects.all()
+        context['centerList'] = CenterList.objects.all()
+        context['vehicleList'] = VehicleList.objects.all()
+        context['zoneList'] = ZoneList.objects.all()
+        return context
 
 
 def get_marker_data(request):
@@ -590,3 +633,9 @@ def get_marker_data(request):
 
 
 
+# todo
+"""
+    1. 정상적으로 배차 나오는지 확인하기
+    2. 각 model CRUD에서 유효성 검사 및 프론트 엔드 부분 내용 추가하기
+    3. 배차 결과 페이지 작성하기
+"""

@@ -1,0 +1,84 @@
+{% extends 'tmap/base_full_width.html' %}
+
+{% block main_area %}
+
+<style>
+  .scrollable-list {
+    max-height: 300px; /* 원하는 최대 높이로 조정하세요 */
+    overflow-y: auto;
+  }
+
+
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="card" style="width: 18rem;">
+            <div class="card-header">
+                Featured
+            </div>
+            <div class="scrollable-list">
+                <ul class="list-group list-group-flush">
+                    {% for z in zoneList %}
+                    <li class="list-group-item">{{z}}</li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-header">
+                Featured
+            </div>
+            <div class="scrollable-list">
+                <ul class="list-group list-group-flush">
+                     {% for c in centerList %}
+                    <li class="list-group-item">{{c}}</li>
+                     {% endfor %}
+
+                </ul>
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="card" style="width: 18rem;">
+            <div class="card-header">
+                Featured
+            </div>
+            <div class="scrollable-list">
+                <ul class="list-group list-group-flush">
+                   {% for o in orderList %}
+                    <li class="list-group-item">{{o}}</li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-header">
+                Featured
+            </div>
+            <div class="scrollable-list">
+                <ul class="list-group list-group-flush">
+                    {% for v in vehicleList %}
+                    <li class="list-group-item">{{v}}</li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
